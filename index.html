@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>莫比美學 | MOBEE Studio 線上預約</title>
+    <style>
+        /* 色彩變數設定 - 莫比美學風格 (融合同意書暖色調) */
+        :root {
+            --primary-color: #A98579; /* 柔和的乾燥玫瑰 / 奶茶色 */
+            --primary-hover: #906D63;
+            --text-main: #4A3A34; /* 深暖褐色 */
+            --text-sub: #826E65; /* 暖灰色 */
+            --bg-color: #E8DFD8; /* 同意書背景的主體色調 (奶茶/淺杏色) */
+            --card-bg: #FAF6F3; /* 卡片稍微提亮，增加層次 */
+            --border-color: #D8CCC3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 預約卡片主體 */
+        .booking-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(74, 58, 52, 0.08);
+            border: 1px solid #ffffff; /* 增加一點邊緣高光感 */
+        }
+
+        /* 頂部 LOGO 與標題區域 */
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+        }
+
+        /* 表單欄位 */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #ffffff;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(169, 133, 121, 0.2);
+        }
+
+        /* 下拉選單客製化箭頭 */
+        select.input-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23826E65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+        /* 送出按鈕 */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            letter-spacing: 2px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+        }
+
+        /* 手機版微調 */
+        @media (max-width: 480px) {
+            .booking-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="booking-container">
+        <div class="header">
+            <h1>莫比美學</h1>
+            <p>MOBEE Studio</p>
+        </div>
+
+        <form id="bookingForm">
+            <!-- 姓名 -->
+            <div class="form-group">
+                <label>姓名 Name</label>
+                <input type="text" id="name" class="input-control" placeholder="請輸入您的真實姓名" required>
+            </div>
+
+            <!-- 生日 -->
+            <div class="form-group">
+                <label>生日 Birthday</label>
+                <input type="date" id="birthday" class="input-control" required>
+            </div>
+
+            <!-- 預約日期 -->
+            <div class="form-group">
+                <label>預約日期 Date</label>
+                <input type="date" id="bookDate" class="input-control" required>
+            </div>
+
+            <!-- 預約時段 -->
+            <div class="form-group">
+                <label>預約時段 Time</label>
+                <select id="timeSlot" class="input-control" required>
+                    <option value="" disabled selected>請選擇時段</option>
+                    <option value="morning">上午 (10:00 - 12:00)</option>
+                    <option value="afternoon">下午 (13:00 - 16:00)</option>
+                    <option value="evening">晚間 (17:00 - 20:00)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">確認預約</button>
+        </form>
+
+        <div class="footer-note">
+            &copy; 2026 MOBEE Studio. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookDate').setAttribute('min', today);
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const data = {
+                name: document.getElementById('name').value,
+                birthday: document.getElementById('birthday').value,
+                bookDate: document.getElementById('bookDate').value,
+                timeSlot: document.getElementById('timeSlot').value
+            };
+
+            alert(`預約成功！\n\n親愛的 ${data.name}，我們已收到您的預約資訊。\n期待在 MOBEE Studio 為您服務！`);
+            
+            this.reset();
+        });
+    </script>
+</body>
+</html>
