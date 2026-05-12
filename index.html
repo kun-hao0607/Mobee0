@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+Put your HTML text here<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>莫比美學 | MOBEE Studio 線上預約</title>
     <style>
-        /* 色彩變數設定 - 莫比美學風格 (融合同意書暖色調) */
+        /* (你原本漂亮的 CSS 保持不變) */
         :root {
-            --primary-color: #A98579; /* 柔和的乾燥玫瑰 / 奶茶色 */
+            --primary-color: #A98579;
             --primary-hover: #906D63;
-            --text-main: #4A3A34; /* 深暖褐色 */
-            --text-sub: #826E65; /* 暖灰色 */
-            --bg-color: #E8DFD8; /* 同意書背景的主體色調 (奶茶/淺杏色) */
-            --card-bg: #FAF6F3; /* 卡片稍微提亮，增加層次 */
+            --text-main: #4A3A34;
+            --text-sub: #826E65;
+            --bg-color: #E8DFD8;
+            --card-bg: #FAF6F3;
             --border-color: #D8CCC3;
         }
 
@@ -33,7 +33,6 @@
             padding: 20px;
         }
 
-        /* 預約卡片主體 */
         .booking-container {
             background: var(--card-bg);
             width: 100%;
@@ -41,10 +40,9 @@
             padding: 40px 35px;
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(74, 58, 52, 0.08);
-            border: 1px solid #ffffff; /* 增加一點邊緣高光感 */
+            border: 1px solid #ffffff;
         }
 
-        /* 頂部 LOGO 與標題區域 */
         .header {
             text-align: center;
             margin-bottom: 35px;
@@ -64,7 +62,6 @@
             letter-spacing: 2px;
         }
 
-        /* 表單欄位 */
         .form-group {
             margin-bottom: 22px;
         }
@@ -95,7 +92,6 @@
             box-shadow: 0 0 0 3px rgba(169, 133, 121, 0.2);
         }
 
-        /* 下拉選單客製化箭頭 */
         select.input-control {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23826E65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -105,7 +101,6 @@
             cursor: pointer;
         }
 
-        /* 送出按鈕 */
         .btn-submit {
             width: 100%;
             padding: 16px;
@@ -126,6 +121,11 @@
             transform: translateY(-2px);
         }
 
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
         .footer-note {
             text-align: center;
             margin-top: 30px;
@@ -134,7 +134,6 @@
             letter-spacing: 1px;
         }
 
-        /* 手機版微調 */
         @media (max-width: 480px) {
             .booking-container {
                 padding: 30px 20px;
@@ -151,25 +150,21 @@
         </div>
 
         <form id="bookingForm">
-            <!-- 姓名 -->
             <div class="form-group">
                 <label>姓名 Name</label>
                 <input type="text" id="name" class="input-control" placeholder="請輸入您的真實姓名" required>
             </div>
 
-            <!-- 生日 -->
             <div class="form-group">
                 <label>生日 Birthday</label>
                 <input type="date" id="birthday" class="input-control" required>
             </div>
 
-            <!-- 預約日期 -->
             <div class="form-group">
                 <label>預約日期 Date</label>
                 <input type="date" id="bookDate" class="input-control" required>
             </div>
 
-            <!-- 預約時段 -->
             <div class="form-group">
                 <label>預約時段 Time</label>
                 <select id="timeSlot" class="input-control" required>
@@ -180,7 +175,7 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-submit">確認預約</button>
+            <button type="submit" id="submitBtn" class="btn-submit">確認預約</button>
         </form>
 
         <div class="footer-note">
@@ -188,23 +183,64 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // 1. 引入 Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. ！！！請填入你在 Firebase Console 獲得的配置！！！
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB48AM8lpTTTg5yoEWTU0x9oZLHrXhcqRQ",
+  authDomain: "mobee-805d2.firebaseapp.com",
+  projectId: "mobee-805d2",
+  storageBucket: "mobee-805d2.firebasestorage.app",
+  messagingSenderId: "283593953914",
+  appId: "1:283593953914:web:b67b42d430f1547ebda1c3",
+  measurementId: "G-37PT3XEH5V" };
+
+        // 3. 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const bookingRef = collection(db, "bookings"); // 將預約儲存在名為 "bookings" 的集合
+
+        // 設定日期最小值（今天）
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('bookDate').setAttribute('min', today);
 
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        const bookingForm = document.getElementById('bookingForm');
+        const submitBtn = document.getElementById('submitBtn');
 
+        // 4. 送出表單邏輯
+        bookingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 防止重複點擊
+            submitBtn.disabled = true;
+            submitBtn.textContent = "預約傳送中...";
+
+            const name = document.getElementById('name').value;
             const data = {
-                name: document.getElementById('name').value,
+                name: name,
                 birthday: document.getElementById('birthday').value,
                 bookDate: document.getElementById('bookDate').value,
-                timeSlot: document.getElementById('timeSlot').value
+                timeSlot: document.getElementById('timeSlot').value,
+                createdAt: serverTimestamp() // 紀錄填單時間
             };
 
-            alert(`預約成功！\n\n親愛的 ${data.name}，我們已收到您的預約資訊。\n期待在 MOBEE Studio 為您服務！`);
-            
-            this.reset();
+            try {
+                // 寫入資料到 Firebase
+                await addDoc(bookingRef, data);
+
+                alert(`預約成功！\n\n親愛的 ${name}，我們已收到您的預約資訊。\n期待在 MOBEE Studio 為您服務！`);
+                bookingForm.reset();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("預約失敗，請稍後再試或是聯絡客服。");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "確認預約";
+            }
         });
     </script>
 </body>
